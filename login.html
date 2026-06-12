@@ -1,22 +1,21 @@
 <!DOCTYPE html>
-<!-- Coding By CodingNepal - www.codingnepalweb.com -->
 <html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Glassmorphism Login Form | CodingNepal</title>
+  <title>Login - Dua Warna Pratama</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="wrapper">
-    <form action="#">
+    <form id="loginForm" action="#">
       <h2>Login</h2>
-        <div class="input-field">
-        <input type="text" required>
-        <label>Enter your email</label>
+      <div class="input-field">
+        <input type="text" id="username" required>
+        <label>Enter your email / username</label>
       </div>
       <div class="input-field">
-        <input type="password" required>
+        <input type="password" id="password" required>
         <label>Enter your password</label>
       </div>
       <div class="forget">
@@ -32,5 +31,60 @@
       </div>
     </form>
   </div>
+
+  <script>
+    // Meminta JavaScript untuk mengawasi form ketika tombol "Log In" diklik
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // Mencegah halaman refresh otomatis saat diklik
+        
+        // Mengambil teks yang kamu ketik di kotak username & password
+        const userInp = document.getElementById('username').value;
+        const passInp = document.getElementById('password').value;
+        
+        // Alamat API dinamis yang tertulis di LKPD kamu
+        const apiUrl = "https://herisusanta.my.id/javalogin/api/"; 
+
+        // Mengirim data username dan password ke server internet
+        fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: userInp,
+                password: passInp
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Jika server menjawab berhasil, atau jika kamu ketik akun uji coba (admin/heri):
+            if (data.status === 'success' || data.success === true || (userInp === 'heri' && passInp === '123') || (userInp === 'admin' && passInp === '123')) {
+                alert('Login Berhasil! Selamat datang, ' + userInp);
+                
+                // Menyimpan nama kamu di memori browser agar web tahu kamu sudah login
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('username', userInp);
+                
+                // Membuka kembali halaman utama (Beranda) otomatis
+                window.location.href = 'index.html';
+            } else {
+                // Jika password salah
+                alert('Login Gagal! Username atau Password salah.');
+            }
+        })
+        .catch(error => {
+            // Cadangan jika sewaktu-waktu server internet API-nya sedang mati/error
+            if ((userInp === 'heri' && passInp === '123') || (userInp === 'admin' && passInp === '123')) {
+                alert('Login Berhasil (Offline Mode)! Selamat datang, ' + userInp);
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('username', userInp);
+                window.location.href = 'index.html';
+            } else {
+                alert('Terjadi kesalahan koneksi atau data salah.');
+                console.error('Error:', error);
+            }
+        });
+    });
+  </script>
 </body>
 </html>
